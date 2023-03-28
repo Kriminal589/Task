@@ -56,9 +56,11 @@ public class StudentController {
         return studentService.getStudentsByFiltered(firstName, lastName, middleName, universityName, creationDate);
     }
 
+    //Запрос регистрации
     @PostMapping("/registration")
     @ResponseBody
     public String registration(@RequestBody Student student) {
+        //Шифрую пароль
         student.setPassword(SecurityConfig.passwordEncoder().encode(student.getPassword()));
         studentService.createStudent(student);
         return "registration";

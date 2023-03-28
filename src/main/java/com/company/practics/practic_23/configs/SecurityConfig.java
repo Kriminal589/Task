@@ -12,17 +12,29 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableWebSecurity
 public class SecurityConfig {
 
+    //Бин для генерации объекта класса BCrypt. В сервисе вызывается этот бин и шифрует пароль
     @Bean
     public static @NotNull BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
+    //Новая защита спринга. Раньше было лучше и удобнее
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                .authorizeHttpRequests((authz) -> authz
-                        .requestMatchers("/students/registration").permitAll()
-                        .anyRequest().authenticated()
+                .authorizeHttpRequests((authz) -> {
+                    try {
+                        authz
+                                //Разрешаю всем доступ по этому запросу.
+                                //Но при последнем запуске почему-то я не получил доступ
+                                .requestMatchers("/students/registrations").permitAll()
+                                .anyRequest().authenticated()
+                                .and()
+                                .formLogin();
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                }
                 );
         return http.build();
     }
